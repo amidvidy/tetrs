@@ -1,4 +1,4 @@
-use cursive::views::{DebugView, LinearLayout};
+use cursive::views::LinearLayout;
 
 use log::LevelFilter;
 
@@ -11,7 +11,7 @@ fn main() {
 
     let mut siv = cursive::default();
 
-    let mut game = game::Game::new();
+    let game = game::Game::new();
 
     siv.set_fps(1);
 

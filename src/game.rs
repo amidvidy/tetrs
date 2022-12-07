@@ -1,18 +1,13 @@
-use log::debug;
-
 use cursive::{
     event::{EventResult, Key},
     theme::{BaseColor, Color, ColorStyle},
     view::CannotFocus,
 };
-use enum_iterator::{all, next_cycle, previous_cycle, Sequence};
+use enum_iterator::{all, next_cycle, Sequence};
 
 use rand::seq::IteratorRandom;
 
-use std::{
-    process::exit,
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 const NUM_ROWS: isize = 40;
 const NUM_VISIBLE_ROWS: isize = 20;
@@ -31,12 +26,6 @@ enum CellState {
     O,        // empty
 }
 
-#[derive(Copy, Clone)]
-enum RotateKind {
-    Clockwise,
-    Counterclockwise,
-}
-
 #[derive(Sequence, Debug, Copy, Clone)]
 enum Rotation {
     R0,
@@ -49,16 +38,6 @@ enum Move {
     Left,
     Right,
     Down,
-}
-
-impl Rotation {
-    fn rotate(&self, kind: RotateKind) -> Rotation {
-        match kind {
-            // why do I need to unwrap these?
-            RotateKind::Clockwise => next_cycle(self).unwrap(),
-            RotateKind::Counterclockwise => previous_cycle(self).unwrap(),
-        }
-    }
 }
 
 #[derive(PartialEq)]
@@ -348,9 +327,10 @@ impl Game {
         true
     }
 
-    fn rotate(&mut self, rotate_kind: RotateKind) {
+    fn rotate(&mut self) {
         if let Some(tet @ Tetronimo { rotation, .. }) = self.active_tet {
-            let new_rotation = rotation.rotate(rotate_kind);
+            // why do I need to unwrap this?
+            let new_rotation = next_cycle(&rotation).unwrap_or(Rotation::R0);
             let next_tet = Tetronimo {
                 rotation: new_rotation,
                 ..tet
@@ -470,12 +450,10 @@ impl Game {
         }
 
         let empty_row: [CellState; NUM_COLUMNS as usize] = [CellState::O; NUM_COLUMNS as usize];
-        if new_row_idx > 0 {
-            for i in new_row_idx..=0 {
-                log::info!("padding with empty rows {:?}", new_row_idx);
-                let dst = &mut self.cells[new_row_idx as usize];
-                dst.copy_from_slice(&empty_row);
-            }
+        for i in (0..=new_row_idx).rev() {
+            log::info!("padding with empty rows {:?}", i);
+            let dst = &mut self.cells[i as usize];
+            dst.copy_from_slice(&empty_row);
         }
     }
 
@@ -500,7 +478,7 @@ impl Game {
                 }
             }
 
-            Some(active_tet @ Tetronimo { kind, pos, .. }) => {
+            Some(active_tet @ Tetronimo { pos, .. }) => {
                 let Position(x, y) = pos;
 
                 // TODO: reuse move_
@@ -580,7 +558,7 @@ impl cursive::View for Game {
                 EventResult::Consumed(None)
             }
             cursive::event::Event::Key(Key::Up) => {
-                self.rotate(RotateKind::Counterclockwise);
+                self.rotate();
                 EventResult::Consumed(None)
             }
             cursive::event::Event::Key(Key::Down) => {

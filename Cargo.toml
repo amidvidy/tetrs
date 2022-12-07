@@ -5,11 +5,6 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[patch.crates-io]
-cursive = { path = "/Users/amidvidy/Documents/git/cursive/cursive" }
-cursive_core = { path = "/Users/amidvidy/Documents/git/cursive/cursive-core" }
-
-
 [dependencies]
 cursive = "0.20"
 enum-iterator = "1.2.0"
