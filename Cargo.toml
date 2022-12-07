@@ -1,0 +1,18 @@
+[package]
+name = "tetris"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[patch.crates-io]
+cursive = { path = "/Users/amidvidy/Documents/git/cursive/cursive" }
+cursive_core = { path = "/Users/amidvidy/Documents/git/cursive/cursive-core" }
+
+
+[dependencies]
+cursive = "0.20"
+enum-iterator = "1.2.0"
+log = "0.4"
+rand = "0.8"
+simple-logging = "2.0.2"
